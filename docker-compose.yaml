@@ -1,0 +1,16 @@
+version: '2'
+x-tb: &default-config
+  image: telegram_bot:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: always
+
+services:
+    telegram-bot-en:
+      <<: *default-config
+      environment:
+        - TELEGRAM_BOT_LANGUAGE=en
+        - TELEGRAM_BOT_TOKEN_PATH=/usr/local/telegram-bot/config_file.py
+      volumes:
+        - ./config_file.py:/usr/local/telegram-bot/config_file.py

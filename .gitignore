@@ -1,0 +1,7 @@
+.vscode
+__pycache__
+config*.py
+api_token.json
+venv
+*.log
+*.swp
