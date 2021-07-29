@@ -63,8 +63,8 @@ states = {
     },
     'faq q3': {
       'message': 'Android: Si has instalado Psiphon para Android a través de la Google Play Store, será actualizado automáticamente cuando una actualización esté disponible. Si lo has hecho desde otro sitio, la aplicación Psiphon descargará las actualizaciones en la medida en que estén disponibles, y aparecerá una notificación solicitándote instalarlas.\n\n' 
-                 'Windows: Windows: La aplicación de Psiphon para Windows descargará e instalará actualizaciones en la medida en que estén disponibles. \n\n'
-                 'iOS: iOS: App Store automáticamente actualiza a Psiphon, cuando lo permites.',
+                 'Windows: La aplicación de Psiphon para Windows descargará e instalará actualizaciones en la medida en que estén disponibles. \n\n'
+                 'iOS: App Store automáticamente actualiza a Psiphon, cuando lo permites.',
       'pattern': 'f3',
     },
     'share facebook': {
