@@ -64,7 +64,7 @@ states = {
     'faq q3': {
       'message': 'Android: If you have installed Psiphon for Android through the Google Play Store, it will be automatically updated by the Play Store when an update is available. If you have sideloaded Psiphon for Android, the Psiphon client will download updates as they are available, and a notification will appear asking you to install the update.\n\n' 
                  'Windows: The Psiphon for Windows client will download and install updates as they are available.\n\n'
-                 'iOS: App Store atumatically updates Psiphon, when you permit it.',
+                 'iOS: App Store automatically updates Psiphon, when you permit it.',
       'pattern': 'f3',
     },
     'share facebook': {
