@@ -68,18 +68,15 @@ states = {
         "pattern": "f3",
     },
     "share facebook": {
-        "message": "Psiphon Facebook irratti hordoofaa \n"
-        "https://www.facebook.com/Psiphon-207377692624236/",
+        "message": "Psiphon Facebook irratti hordoofaa \n" "https://www.facebook.com/Psiphon-207377692624236/",
         "pattern": "sm1",
     },
     "share twitter": {
-        "message": "Psiphon Twitter irratti hordofaa \n"
-        "https://twitter.com/psiphoninc",
+        "message": "Psiphon Twitter irratti hordofaa \n" "https://twitter.com/psiphoninc",
         "pattern": "sm2",
     },
     "share instagram": {
-        "message": "Instagram irratti hordofaa\n"
-        "https://www.instagram.com/psiphoninc/",
+        "message": "Instagram irratti hordofaa\n" "https://www.instagram.com/psiphoninc/",
         "pattern": "sm3",
     },
 }

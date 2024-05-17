@@ -68,8 +68,7 @@ states = {
         "pattern": "f3",
     },
     "share facebook": {
-        "message": "Psiphonን Facebook (ፌስቡክ) ላይ \n"
-        "https://www.facebook.com/Psiphon-207377692624236/",
+        "message": "Psiphonን Facebook (ፌስቡክ) ላይ \n" "https://www.facebook.com/Psiphon-207377692624236/",
         "pattern": "sm1",
     },
     "share twitter": {
@@ -77,8 +76,7 @@ states = {
         "pattern": "sm2",
     },
     "share instagram": {
-        "message": "Psiphonን Instagram (ኢንስታግራም) ላይ\n"
-        "https://www.instagram.com/psiphoninc/",
+        "message": "Psiphonን Instagram (ኢንስታግራም) ላይ\n" "https://www.instagram.com/psiphoninc/",
         "pattern": "sm3",
     },
 }

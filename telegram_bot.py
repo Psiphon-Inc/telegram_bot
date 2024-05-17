@@ -53,9 +53,7 @@ else:
 
 log = get_logger(
     f"telegram_bot:{language}",
-    log_path=Path(
-        os.path.join(os.path.dirname(__file__), f"telegram_bot_{language}.log")
-    ),
+    log_path=Path(os.path.join(os.path.dirname(__file__), f"telegram_bot_{language}.log")),
 )
 
 
@@ -133,9 +131,7 @@ def getInlineKeyboard(buttons):
     for row in buttons:
         current_row = []
         for button in row:
-            current_row.append(
-                InlineKeyboardButton(button["text"], callback_data=button["next_item"])
-            )
+            current_row.append(InlineKeyboardButton(button["text"], callback_data=button["next_item"]))
         keyboard.append(current_row)
     return InlineKeyboardMarkup(keyboard)
 
@@ -148,11 +144,7 @@ for state in states.values():
         keyboard = getInlineKeyboard(state["keyboard"])
     if state["pattern"] == "activity":
         updater.dispatcher.add_handler(getStartHandler(state["message"], keyboard))
-    updater.dispatcher.add_handler(
-        getCallBackQueryHandler(
-            state["message"], state["pattern"], reply_markup=keyboard
-        )
-    )
+    updater.dispatcher.add_handler(getCallBackQueryHandler(state["message"], state["pattern"], reply_markup=keyboard))
 
 print(updater.bot.username, "is listening...")
 updater.start_polling()

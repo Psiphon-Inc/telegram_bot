@@ -22,9 +22,7 @@ import tempfile
 from typing import Optional
 
 DEFAULT_LOG_ROOT: str = "tblogger"
-DEFAULT_TEXT_FORMATTER = logging.Formatter(
-    "[%(asctime)s] (%(name)s)  %(levelname)s: %(message)s"
-)
+DEFAULT_TEXT_FORMATTER = logging.Formatter("[%(asctime)s] (%(name)s)  %(levelname)s: %(message)s")
 DEFAULT_LOG_LEVEL: int = int(os.getenv("TELEGRAM_BOT_LOG_LEVEL", str(logging.DEBUG)))
 
 
@@ -96,6 +94,4 @@ JSON_FIELDS = [
     "name",
 ]
 
-DEFAULT_JSON_FORMATTER = JSONFormatter(
-    json.dumps({field: "%(" + field + ")s" for field in JSON_FIELDS})
-)
+DEFAULT_JSON_FORMATTER = JSONFormatter(json.dumps({field: "%(" + field + ")s" for field in JSON_FIELDS}))

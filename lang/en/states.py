@@ -68,8 +68,7 @@ states = {
         "pattern": "f3",
     },
     "share facebook": {
-        "message": "Follow Psiphon on Facebook \n"
-        "https://www.facebook.com/Psiphon-207377692624236/",
+        "message": "Follow Psiphon on Facebook \n" "https://www.facebook.com/Psiphon-207377692624236/",
         "pattern": "sm1",
     },
     "share twitter": {
@@ -77,8 +76,7 @@ states = {
         "pattern": "sm2",
     },
     "share instagram": {
-        "message": "Follow Psiphon on Instagram \n"
-        "https://www.instagram.com/psiphoninc/",
+        "message": "Follow Psiphon on Instagram \n" "https://www.instagram.com/psiphoninc/",
         "pattern": "sm3",
     },
 }
