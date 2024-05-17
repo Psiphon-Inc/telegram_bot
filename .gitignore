@@ -5,3 +5,4 @@ api_token.json
 venv
 *.log
 *.swp
+.DS_Store
