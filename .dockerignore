@@ -2,3 +2,5 @@
 Docker
 venv
 __pycache__
+docker-compose.yaml
+Jenkinsfile
