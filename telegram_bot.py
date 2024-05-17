@@ -16,23 +16,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from telegram.ext import (
-    CommandHandler,
-    CallbackQueryHandler,
-    MessageHandler,
-    Filters,
-    Updater,
-)
+import argparse
+import importlib
+import json
+import os
+from pathlib import Path
+
 from telegram import (
-    ReplyMarkup,
-    ReplyKeyboardMarkup,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
-from pathlib import Path
-from logger import get_logger
+from telegram.ext import (
+    CallbackQueryHandler,
+    CommandHandler,
+    Updater,
+)
 
-import importlib, argparse, sys, os, json
+from logger import get_logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--language", help="language code as in ./lang/. Default: en")
@@ -70,7 +70,7 @@ def checkTokenEnv(language, logger):
 
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     if not token:
-        raise Exception(f"No token or token file found")
+        raise Exception("No token or token file found")
     return token
 
 

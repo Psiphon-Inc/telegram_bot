@@ -14,8 +14,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import json
+import logging
+import logging.handlers
+import os
+import tempfile
 from typing import Optional
-import tempfile, logging, logging.handlers, os, json
 
 DEFAULT_LOG_ROOT: str = "tblogger"
 DEFAULT_TEXT_FORMATTER = logging.Formatter(
