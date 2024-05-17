@@ -1,0 +1,5 @@
+[lint]
+extend-select = [
+    'PL', # pylint
+    'I', # isort
+]
