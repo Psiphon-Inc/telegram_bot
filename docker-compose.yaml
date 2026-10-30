@@ -13,4 +13,4 @@ services:
         - TELEGRAM_BOT_LANGUAGE=en
         - TELEGRAM_BOT_TOKEN_PATH=/usr/local/telegram-bot/config_file.py
       volumes:
-        - ./config_file.py:/usr/local/telegram-bot/config_file.py
+        - ./config_file.py:/usr/local/telegram-bot/config_file.py:ro

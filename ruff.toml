@@ -1,4 +1,5 @@
 line-length=120
+extend-exclude = ["venv"]
 
 [lint]
 extend-select = [

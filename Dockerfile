@@ -1,22 +1,34 @@
-FROM python:3.8-alpine
+# Pinned by digest so the base image cannot change under us. Update the tag and digest together.
+ARG PYTHON_IMAGE=python:3.13-alpine@sha256:7984cf56ceaddebe4fefeb75d64000b9f45d8b77b11a09b24524da6cdc3af0c8
+
+# Stage 1: install dependencies. python-telegram-bot and httpx are pure Python, so no compiler is needed.
+# requirements.txt is a fully pinned, hashed lockfile (see README), so every package is verified.
+FROM ${PYTHON_IMAGE} AS build
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --no-cache-dir --require-hashes --prefix=/install -r requirements.txt
+
+# Stage 2: runtime image with only the interpreter, the installed packages and the bot.
+FROM ${PYTHON_IMAGE}
 
 # Set these variables in environment at runtime:
 #   TELEGRAM_BOT_LANGUAGE
-#   TELEGRAM_BOT_TOKEN_PATH
+#   TELEGRAM_BOT_TOKEN_PATH (or TELEGRAM_BOT_TOKEN)
 
-COPY telegram_bot.py /usr/local/telegram-bot/telegram_bot.py
-COPY logger.py /usr/local/telegram-bot/logger.py
-COPY lang /usr/local/telegram-bot/lang
-COPY requirements.txt /usr/local/telegram-bot/requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    TELEGRAM_BOT_LOG_DIR=/var/log/telegram-bot
 
-# Packages needed for Alpine only. Alpine offers 60% reduction in image size. (1GB -> 333MB)
-RUN apk update && apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo make
-RUN cd /usr/local/telegram-bot && touch config_file.py && pip install -r requirements.txt
-
-# Create new user and change owner of the telegram-bot files
 RUN addgroup -S telegram_bot && adduser -S telegram_bot -G telegram_bot && \
-    chown -R telegram_bot:telegram_bot /usr/local/telegram-bot
-USER telegram_bot
+    mkdir -p /var/log/telegram-bot && chown telegram_bot:telegram_bot /var/log/telegram-bot
+
+COPY --from=build /install /usr/local
+
+# Code stays owned by root so the runtime user cannot modify it; only the log directory is writable.
 WORKDIR /usr/local/telegram-bot
+COPY telegram_bot.py logger.py ./
+COPY lang ./lang
 COPY entrypoint.sh /entrypoint.sh
+
+USER telegram_bot
 ENTRYPOINT ["/entrypoint.sh"]

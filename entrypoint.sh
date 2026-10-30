@@ -11,15 +11,15 @@ then
   echo
   exit 1
 fi
-if [ ! -z "${TELEGRAM_BOT_TOKEN_PATH}" ]
+if [ -n "${TELEGRAM_BOT_TOKEN_PATH}" ]
 then
-  if [ ! -f ${TELEGRAM_BOT_TOKEN_PATH} ]
+  if [ ! -f "${TELEGRAM_BOT_TOKEN_PATH}" ]
   then
     echo "Telegram bot API token file not found: ${TELEGRAM_BOT_TOKEN_PATH}"
     echo
     exit 1
   fi
-  if [ ! -s ${TELEGRAM_BOT_TOKEN_PATH} ]
+  if [ ! -s "${TELEGRAM_BOT_TOKEN_PATH}" ]
   then
     echo "Please place Telegram bot API token into ${TELEGRAM_BOT_TOKEN_PATH}"
     echo "Example content of api_token.json:"
@@ -30,4 +30,4 @@ then
     exit 1
   fi
 fi
-python3 /usr/local/telegram-bot/telegram_bot.py
+exec python3 /usr/local/telegram-bot/telegram_bot.py
