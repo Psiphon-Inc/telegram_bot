@@ -69,11 +69,14 @@ $ ruff check . && ruff format --check .
 ```
 
 `requirements.txt` and `dev-requirements.txt` are fully pinned lockfiles with hashes, generated from
-`requirements.in` and `dev-requirements.in`. To change or upgrade a dependency, edit the `.in` file and
-regenerate inside the same Python the image uses:
+`requirements.in` and `dev-requirements.in`. Renovate (see `renovate.json`) opens PRs that bump the `.in`
+pins and regenerate the lockfiles, and refreshes the transitive pins weekly. To change a dependency by
+hand, edit the `.in` file and regenerate inside the same Python the image uses:
 ```
-$ docker run --rm -v "$PWD:/w" -w /w python:3.13-alpine sh -c 'pip install -q pip-tools==7.6.2 && pip-compile --generate-hashes --strip-extras --no-header -o requirements.txt requirements.in && pip-compile --generate-hashes --strip-extras --no-header -o dev-requirements.txt dev-requirements.in'
+$ docker run --rm -v "$PWD:/w" -w /w python:3.13-alpine sh -c 'pip install -q pip-tools==7.6.2 && pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in && pip-compile --generate-hashes --strip-extras --output-file=dev-requirements.txt dev-requirements.in'
 ```
+Keep the header pip-compile writes at the top of each lockfile: Renovate reads the command and Python
+version from it.
 
 Examples:
 ```
@@ -96,8 +99,10 @@ $ TELEGRAM_BOT_LANGUAGE=ar TELEGRAM_BOT_TOKEN=abcdefghijklmnopqrstuvwxyzAZY1234y
 1) Make sure api_token.json contains a valid API token
 2) Execute `docker-compose up -d`
 
-The image is built from `python:3.13-alpine` pinned by digest in the `Dockerfile`. To move to a newer
-base image update both the tag and the digest on the `ARG PYTHON_IMAGE` line.
+The image is built from `python:3.13-alpine` pinned by digest in the `Dockerfile`. Renovate keeps the
+digest current. Moving to a newer Python minor version is left to a person, because the lockfile headers,
+the README command and the CI Python version have to move with it: update the tag and digest on the
+`ARG PYTHON_IMAGE` line together.
 
 The token file is mounted read-only. Only the entry for the container's own language is read, so give
 each container a file holding just its own token where possible.
