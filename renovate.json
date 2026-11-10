@@ -30,12 +30,6 @@
       "enabled": false
     },
     {
-      "description": "Org actions track main, as in other Psiphon-Inc repos; do not pin them to a commit.",
-      "matchManagers": ["github-actions"],
-      "matchPackageNames": ["Psiphon-Inc/github-workflows"],
-      "pinDigests": false
-    },
-    {
       "description": "One PR for all GitHub Actions bumps.",
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"

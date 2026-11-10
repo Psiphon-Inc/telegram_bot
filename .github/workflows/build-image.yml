@@ -29,22 +29,26 @@ jobs:
     env:
       PUBLISH_IMAGE: ${{ github.repository == 'Psiphon-Inc/telegram_bot' && github.event_name != 'pull_request' }}
     steps:
-      # Checks out the repo, starts buildx and logs docker in to ECR.
-      - name: Set up ECR
-        if: env.PUBLISH_IMAGE == 'true'
-        id: ecr
-        uses: Psiphon-Inc/github-workflows/setup-ecr@main
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
-
+      # Psiphon-Inc/github-workflows/setup-ecr does the same, but it lives in a
+      # private repo, which a public repo cannot use actions from.
       - name: Checkout code
-        if: env.PUBLISH_IMAGE != 'true'
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up docker buildx
-        if: env.PUBLISH_IMAGE != 'true'
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Configure AWS credentials
+        if: env.PUBLISH_IMAGE == 'true'
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to ECR
+        if: env.PUBLISH_IMAGE == 'true'
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2
 
       - name: Docker metadata
         id: meta
