@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "pip-compile": {
+    "description": "requirements.txt and dev-requirements.txt are pip-compile lockfiles; Renovate reads the command and Python version from their headers.",
+    "managerFilePatterns": ["/(^|/)(dev-)?requirements\\.txt$/"]
+  },
+  "pip_requirements": {
+    "description": "pip-compile already handles the .in files; this manager would also edit the lockfiles directly.",
+    "enabled": false
+  },
+  "docker-compose": {
+    "description": "docker-compose.yaml only references the locally built telegram_bot image.",
+    "enabled": false
+  },
+  "constraints": {
+    "pipTools": "==7.6.2"
+  },
+  "packageRules": [
+    {
+      "description": "Give new PyPI releases a week before proposing them.",
+      "matchDatasources": ["pypi"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Stay on the Python 3.13 line; moving minor version also means regenerating the lockfiles and updating CI, so do it by hand.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["python"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "One PR for all GitHub Actions bumps.",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    }
+  ]
+}

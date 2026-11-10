@@ -29,6 +29,14 @@ states = {
 To add a new language create a subfolder under `lang`, name it with a language code and place 'states.py' file in there.
 
 Language can be selected by defining TELEGRAM_BOT_LANGUAGE environment variable or by using `--language` command line argument.
+The value must match one of the directories under `lang`.
+
+## Logging
+The bot logs to the console and to `telegram_bot_<language>.log` (JSON lines). The file is written next to the
+script, or into the directory named by TELEGRAM_BOT_LOG_DIR (the Docker image sets this to `/var/log/telegram-bot`
+so the code directory can stay read-only). The log level defaults to INFO and can be changed with the
+TELEGRAM_BOT_LOG_LEVEL environment variable, as a name (`DEBUG`) or a number (`10`). The bot token is scrubbed
+from every log line, including library tracebacks, before it is written.
 
 ## Telegram API Token
 API token can be added to the bot in 3 ways. The format of the file is a `JSON` object where the key is the code for the language, and the value is the api key. First if a path to the token file is specified with `--token`, the script will look there. If no file is found, or no argument is used, the script looks for a path set by the TELEGRAM_BOT_TOKEN_PATH environment variable. If no environment variable is set for the path, the script will looks for a TELEGRAM_BOT_TOKEN environment variable for the token.
@@ -46,10 +54,29 @@ The `api_token.json` file is not committed and is ignored in `.gitignore`.
 ## Run
 
 ##### Virtual Environment
+Requires Python 3.10 or newer.
+
 1. Clone repository
 2. Create and activate Python virtual environment ([venv](https://docs.python.org/3/library/venv.html))
 3. Install requirements with `pip install -r requirements.txt`
 4. Run telegram_bot.py
+
+To run the tests and linter:
+```
+$ pip install -r dev-requirements.txt
+$ pytest
+$ ruff check . && ruff format --check .
+```
+
+`requirements.txt` and `dev-requirements.txt` are fully pinned lockfiles with hashes, generated from
+`requirements.in` and `dev-requirements.in`. Renovate (see `renovate.json`) opens PRs that bump the `.in`
+pins and regenerate the lockfiles, and refreshes the transitive pins weekly. To change a dependency by
+hand, edit the `.in` file and regenerate inside the same Python the image uses:
+```
+$ docker run --rm -v "$PWD:/w" -w /w python:3.13-alpine sh -c 'pip install -q pip-tools==7.6.2 && pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in && pip-compile --generate-hashes --strip-extras --output-file=dev-requirements.txt dev-requirements.in'
+```
+Keep the header pip-compile writes at the top of each lockfile: Renovate reads the command and Python
+version from it.
 
 Examples:
 ```
@@ -71,6 +98,14 @@ $ TELEGRAM_BOT_LANGUAGE=ar TELEGRAM_BOT_TOKEN=abcdefghijklmnopqrstuvwxyzAZY1234y
 ##### Docker
 1) Make sure api_token.json contains a valid API token
 2) Execute `docker-compose up -d`
+
+The image is built from `python:3.13-alpine` pinned by digest in the `Dockerfile`. Renovate keeps the
+digest current. Moving to a newer Python minor version is left to a person, because the lockfile headers,
+the README command and the CI Python version have to move with it: update the tag and digest on the
+`ARG PYTHON_IMAGE` line together.
+
+The token file is mounted read-only. Only the entry for the container's own language is read, so give
+each container a file holding just its own token where possible.
 
 To change language modify TELEGRAM_BOT_LANGUAGE inside docker-compose.yaml file.
 

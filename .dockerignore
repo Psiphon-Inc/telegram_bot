@@ -1,6 +1,11 @@
 .dockerignore
+.git
+.github
 Docker
 venv
 __pycache__
+tests
 docker-compose.yaml
-Jenkinsfile
+api_token*.json
+config*.py
+*.log
