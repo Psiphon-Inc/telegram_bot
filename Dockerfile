@@ -19,7 +19,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     TELEGRAM_BOT_LOG_DIR=/var/log/telegram-bot
 
-RUN addgroup -S telegram_bot && adduser -S telegram_bot -G telegram_bot && \
+# Fixed, numeric UID/GID so Kubernetes `runAsNonRoot` can verify the user without a name lookup.
+RUN addgroup -S -g 10001 telegram_bot && adduser -S -u 10001 -G telegram_bot telegram_bot && \
     mkdir -p /var/log/telegram-bot && chown telegram_bot:telegram_bot /var/log/telegram-bot
 
 COPY --from=build /install /usr/local
@@ -30,5 +31,5 @@ COPY telegram_bot.py logger.py ./
 COPY lang ./lang
 COPY entrypoint.sh /entrypoint.sh
 
-USER telegram_bot
+USER 10001:10001
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,66 @@
+name: Build image
+
+# Builds the bot image on every PR and pushes it to ECR as telegram-bot/bot on
+# pushes to master (and on manual runs, so a branch can be deployed for testing).
+# Images are tagged with the full commit SHA, which is what pie's
+# `pie:telegramBot.image` stack config pins, plus the branch name.
+#
+# PRs build without pushing: this repository is public, so PRs from forks get no
+# secrets, and an unmerged PR should not publish an image.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-image-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    env:
+      PUBLISH_IMAGE: ${{ github.repository == 'Psiphon-Inc/telegram_bot' && github.event_name != 'pull_request' }}
+    steps:
+      # Checks out the repo, starts buildx and logs docker in to ECR.
+      - name: Set up ECR
+        if: env.PUBLISH_IMAGE == 'true'
+        id: ecr
+        uses: Psiphon-Inc/github-workflows/setup-ecr@main
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+
+      - name: Checkout code
+        if: env.PUBLISH_IMAGE != 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up docker buildx
+        if: env.PUBLISH_IMAGE != 'true'
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ steps.ecr.outputs.registry || 'local' }}/telegram-bot/bot
+          tags: |
+            type=sha,format=long,prefix=
+            type=ref,event=branch
+            type=ref,event=pr
+
+      - name: Build and push
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: Dockerfile
+          push: ${{ env.PUBLISH_IMAGE == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
