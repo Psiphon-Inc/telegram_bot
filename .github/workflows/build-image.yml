@@ -1,12 +1,14 @@
 name: Build image
 
-# Builds the bot image on every PR and pushes it to ECR as telegram-bot/bot on
-# pushes to master (and on manual runs, so a branch can be deployed for testing).
-# Images are tagged with the full commit SHA, which is what pie's
-# `pie:telegramBot.image` stack config pins, plus the branch name.
+# Builds the bot image on every PR and manual run, and pushes it to ECR as
+# telegram-bot/bot only from master (pushes and manual runs on master). Images
+# are tagged with the full commit SHA, which is what pie's `pie:telegramBot.image`
+# stack config pins, plus the branch name.
 #
-# PRs build without pushing: this repository is public, so PRs from forks get no
-# secrets, and an unmerged PR should not publish an image.
+# No stored AWS keys: the job gets a GitHub OIDC token and assumes
+# telegram-bot-ecr-publisher, which pie's pulumi-clusters stack creates
+# (pie:githubCiFederation.ecrPublishers). That role trusts only master of this
+# repository and can push only to telegram-bot/bot.
 
 on:
   workflow_dispatch:
@@ -27,7 +29,10 @@ jobs:
     name: Build image
     runs-on: ubuntu-latest
     env:
-      PUBLISH_IMAGE: ${{ github.repository == 'Psiphon-Inc/telegram_bot' && github.event_name != 'pull_request' }}
+      PUBLISH_IMAGE: ${{ github.repository == 'Psiphon-Inc/telegram_bot' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
+    permissions:
+      contents: read
+      id-token: write # to request the OIDC token the AWS role trusts
     steps:
       # Psiphon-Inc/github-workflows/setup-ecr does the same, but it lives in a
       # private repo, which a public repo cannot use actions from.
@@ -41,8 +46,8 @@ jobs:
         if: env.PUBLISH_IMAGE == 'true'
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::583352170589:role/telegram-bot-ecr-publisher
+          role-session-name: telegram-bot-build-image-${{ github.run_id }}
           aws-region: us-east-2
 
       - name: Login to ECR
